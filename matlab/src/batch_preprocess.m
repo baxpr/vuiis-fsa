@@ -2,7 +2,6 @@
 %% Paths for local run
 % BRANT and SPM may need
 %    sudo xattr -dr com.apple.quarantine <path>
-%addpath([pwd '/../../external/spm12_r7771/spm12']);
 addpath([pwd '/../../external/brant/brant-stable']);
 brant_configure_paths;
 brant_configure_paths([pwd '/../../external/spm12_r7771/spm12']);
