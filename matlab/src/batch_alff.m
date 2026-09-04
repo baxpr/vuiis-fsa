@@ -1,0 +1,49 @@
+
+%% Output dir (should also contain preprocessed images)
+out_dir = [pwd '/../../OUTPUTS'];
+
+
+%% Get scan-specific information
+fid = fopen(fullfile(out_dir,'fmri.json'), 'r');
+jstr = fread(fid, '*char').';
+fclose(fid);
+fmri_info = jsondecode(jstr);
+
+fmri_trsec = fmri_info.RepetitionTime;
+fprintf('Found TR = %0.3f sec for fmri\n',fmri_trsec);
+
+
+%% Configure BRANT variables for SPON processing
+batch_file = fullfile(out_dir,'brant_ALFF_fALFF.mat');
+gui_fn = 'ALFF/fALFF';
+gui_func = @brant_alff;
+gui_version = '3.37';
+
+% Initialize
+clear gui_parameters
+
+% ALFF config
+gui_parameters{1} = struct( ...
+    'time_series','', ...
+    'tr',fmri_trsec, ...
+    'lower_thr',0.01, ...
+    'upper_thr',0.08, ...
+    'nor',1, ...
+    'sm_ind',1, ...
+    'fwhm',[6 6 6], ...
+    'out_dir',{{out_dir}} ...
+    );
+
+gui_parameters{1}.input_nifti = struct( ...
+    'mask',{{[fileparts(which('brant')) '/template/fmaskEPI_V2mm.nii.gz']}}, ...
+    'nm_pos',1, ...
+    'filetype','dGSRwrfmri.nii', ...
+    'dirs',{{out_dir}}, ...
+    'is4d',1 ...
+    );
+
+% Save to file
+save(batch_file,'gui_fn','gui_func','gui_version','gui_parameters');
+
+% Run
+gui_func(gui_parameters{:});
