@@ -49,11 +49,11 @@ tem6 = image.load_img(os.path.join(fsa_resdir, 'f6.nii.gz'))
 tem8 = image.load_img(os.path.join(fsa_resdir, 'f8.nii.gz'))
 seed_striatum = image.load_img(os.path.join(fsa_resdir, 'striatum.nii.gz'))
 
-seed_striatum_res = image.resample_to_img(seed_striatum, sample, interpolation='nearest', force_resample=True, copy_header=True)
-mask_res = image.resample_to_img(mask, sample, interpolation='nearest', force_resample=True, copy_header=True)
-mask_tem6 = image.resample_to_img(mask, tem6, interpolation='nearest', force_resample=True, copy_header=True)
-striatum_mask_res6 = image.resample_to_img(seed_striatum, tem6, interpolation='nearest', force_resample=True, copy_header=True)
-striatum_mask_res8 = image.resample_to_img(seed_striatum, tem8, interpolation='nearest', force_resample=True, copy_header=True)
+seed_striatum_res = image.resample_to_img(seed_striatum, sample, interpolation='nearest')
+mask_res = image.resample_to_img(mask, sample, interpolation='nearest')
+mask_tem6 = image.resample_to_img(mask, tem6, interpolation='nearest')
+striatum_mask_res6 = image.resample_to_img(seed_striatum, tem6, interpolation='nearest')
+striatum_mask_res8 = image.resample_to_img(seed_striatum, tem8, interpolation='nearest')
 striatum_index = masking.apply_mask(seed_striatum_res, mask_res)
 striatum_mask_res_data = masking.apply_mask(striatum_mask_res6, mask_tem6)
 
@@ -95,18 +95,18 @@ for i in range(fmri_data.shape[1]):
         corr_striatum[i] = stats.pearsonr(ts_striatum, fmri_data[:, i])[0]
 
 corr_img = masking.unmask(corr_striatum, mask_res)
-corr_img_tem6 = image.resample_to_img(corr_img, tem6, force_resample=True, copy_header=True)
+corr_img_tem6 = image.resample_to_img(corr_img, tem6)
 str_corr = masking.apply_mask(corr_img_tem6, mask_tem6)
 corr_striatum_other = str_corr[striatum_mask_res_data == 0]
 
 # Extracting intra-striatal FC
-f_img_res = image.resample_to_img(f_img, tem8, force_resample=True, copy_header=True)
+f_img_res = image.resample_to_img(f_img, tem8)
 ts_str = masking.apply_mask(f_img_res, striatum_mask_res8)
 corr = numpy.corrcoef(ts_str.T)
 fc_str = corr[numpy.tril_indices_from(corr, -1)]
 
 # Extracting striatal fALFF 
-striatum_seed_res = image.resample_to_img(target_img=falff_nii, source_img=seed_striatum, interpolation='nearest', force_resample=True, copy_header=True)
+striatum_seed_res = image.resample_to_img(target_img=falff_nii, source_img=seed_striatum, interpolation='nearest')
 alff = masking.apply_mask(falff_nii, mask_img=striatum_seed_res)
 
 striatal_features = numpy.concatenate([alff, corr_striatum_other, fc_str])
