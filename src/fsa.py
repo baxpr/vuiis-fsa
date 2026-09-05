@@ -7,7 +7,9 @@ import copy
 import joblib
 import os
 import numpy
+import sklearn.preprocessing
 import sys
+import types
 from nilearn import image, masking
 from scipy import stats, ndimage
 
@@ -114,90 +116,24 @@ joblib.dump(striatal_features, os.path.join(out_dir, 'candidates.pkl'))
 print(striatal_features)
 print(striatal_features.shape)
 
-# FIXME WE ARE HERE. NEED TO COMPUTE FSA FROM FEATURES
-sys.exit(0)
-
-save_path = 'PASTE_YOUR_PATH'
-def generate_FSA_candidates(name, fmris, vbf, subjects):
-    
-    """
-    A function that parallelly extracting each individual's fMRI striatal features to 
-    further compute FSA score 
-    
-    """
-    
-    for n, (fmri, falff, s) in enumerate(zip(fmris, vbf, subjects)):
-        f_file = fmri
-        f_img_uns = image.load_img(f_file)
-        # Applying smooth when using voxel-wise features
-        f_img = image.smooth_img(f_img_uns, fwhm=6)
-        fmri_data_uns = masking.apply_mask(f_img_uns, mask_res)
-        fmri_data = masking.apply_mask(f_img, mask_res)
-#         fmri_data[numpy.isnan(fmri_data)] = 0
-        
-        # Extracting extra-striatal FC
-        ts_striatum = numpy.mean(fmri_data_uns * striatum_index, axis=1)
-        corr_striatum = numpy.zeros_like(striatum_index)
-        for i in range(fmri_data.shape[1]):
-            corr_striatum[i] = stats.pearsonr(ts_striatum, fmri_data[:, i])[0]
-        corr_img = masking.unmask(corr_striatum, mask_res)
-        corr_img_tem6 = image.resample_to_img(corr_img, tem6)
-        str_corr = masking.apply_mask(corr_img_tem6, mask_tem6)
-        str_corr[numpy.isnan(str_corr)] = 0
-        corr_striatum_other = str_corr[striatum_mask_res_data == 0]
-
-        # Extracting intra-striatal FC
-        f_img_res = image.resample_to_img(f_img, tem8)
-        ts_str = masking.apply_mask(f_img_res, striatum_mask_res8)
-        corr = numpy.corrcoef(ts_str.T)
-        fc_str = corr[numpy.tril_indices_from(corr, -1)]
-        
-        # Extracting striatal fALFF 
-        striatum_seed_res = image.resample_to_img(target_img=falff, source_img=seed_striatum, interpolation='nearest')
-        alff = masking.apply_mask(falff, mask_img=striatum_seed_res)
-
-        striatal_features = numpy.concatenate([alff, corr_striatum_other, fc_str])
-        print('Run task %s (%s)...' % (name, os.getpid()))
-        joblib.dump(striatal_features, os.path.join(save_path, s + '_candidates.pkl'))
-        
-if __name__=='__main__':
-    print('Parent process %s.' % os.getpid())
-    kernels = 25
-    batch = len(subjects) / kernels
-    p = Pool(kernels)
-    subs = [[sub for sub in subjects[batch * i: batch * i + batch]] for i in range(kernels)]
-    fmri_files = [[f for f in fmris[batch * i: batch * i + batch]] for i in range(kernels)]
-    vbf_files = [[f for f in vbf[batch * i: batch * i +batch]] for i in range(kernels)]
-    for i in range(kernels):
-        p.apply_async(generate_FSA_candidates, args=(i, fmri_files[i], vbf_files[i], subs[i]))
-    print('Waiting for all subprocesses done...')
-    p.close()
-    p.join()
-    print('All subprocesses done.')
-
-
 ## Compute FSA prediction and score
 
-# Load precomputed striatal features 
-striatal_features = numpy.zeros([len(subjects), 12689])
-for i, s in enumerate(subjects):
-    striatal_features[i, :] = joblib.load(os.path.join(save_path, s + '_candidates.pkl'))
+# Create an alias module for the old sklearn path used in older pickles
+alias = types.ModuleType("sklearn.preprocessing.data")
+alias.__dict__.update(sklearn.preprocessing.__dict__)
+sys.modules["sklearn.preprocessing.data"] = alias
 
 # Load pre-trained model of standardizing features by all samples from 7 sites
 # A new customized standardization model could be more applicable for new datasets with different races, MR scanners or preprocessing pipelines
 # By using the function in following link: https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html#sklearn.preprocessing.StandardScaler
-
-path = 'PASTE_YOUR_PATH'
-prep = joblib.load(os.path.join(path, 'model_pre_final.m'))
+prep = joblib.load(os.path.join(fsa_resdir, 'model_pre_final.m'))
 
 # Load pre-trained model trained by all individuals from seven sites
 # The optimal parameter was selected based on the follwing grid network:
 # grid = [{'kernel': ['rbf'], 'gamma': numpy.logspace(numpy.log10(0.0001/fc.shape[1]), numpy.log10(10000./fc.shape[1]), 10),
 #         'C': numpy.logspace(numpy.log10(0.0001), numpy.log10(10000), 10)}]
-
-svc = joblib.load(os.path.join(path, 'model_final.m'))
+svc = joblib.load(os.path.join(fsa_resdir, 'model_final.m'))
 predict = svc.predict(prep.transform(striatal_features))
-test = numpy.array([1 if s[:2] == 'NC' else -1 for s in subjects])
-print(accuracy_score(predict, test))
 FSA_score = svc.decision_function(prep.transform(striatal_features))
 print(FSA_score)
+
