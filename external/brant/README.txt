@@ -8,3 +8,7 @@ doi: 10.3389/fninf.2018.00052.
 PMID: 30233348; PMCID: PMC6129764.
 https://pmc.ncbi.nlm.nih.gov/articles/PMC6129764/
 
+
+Changes made to allow compilation:
+
+ccm/fine_tune0.m  deleted (syntax error)
