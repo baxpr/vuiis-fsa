@@ -9,6 +9,7 @@ PMID: 30233348; PMCID: PMC6129764.
 https://pmc.ncbi.nlm.nih.gov/articles/PMC6129764/
 
 
-Changes made to allow compilation:
+Some files with syntax errors were renamed to *.bak to allow compilation:
 
-ccm/fine_tune0.m  deleted (syntax error)
+ccm/fine_tune0.m
+brant_postprocess/brant_SPON/brant_spon.m
