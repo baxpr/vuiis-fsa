@@ -6,16 +6,18 @@ if numel(varargin)==1 && strcmp(varargin{1},'quit') && isdeployed
     exit
 end
 
-% Filenames are hard coded so we can rely on them in the post-matlab part
-% of the processing
-inp = struct( ...
-    'fmri_niigz','/INPUTS/fmri.nii.gz', ...
-    'fmri_json','/INPUTS/fmri.json', ...
-    't1_niigz','/INPUTS/t1.nii.gz', ...
-    't1_json','/INPUTS/t1.json', ...
-    'out_dir','/OUTPUTS' ...
-    );
+% Parse inputs. Filenames used should be these defaults so we can rely on
+% them in the post-matlab part of the processing
+P = inputParser;
+addOptional(P,'fmri_niigz','/INPUTS/fmri.nii.gz')
+addOptional(P,'fmri_json','/INPUTS/fmri.json')
+addOptional(P,'t1_niigz','/INPUTS/t1.nii.gz');
+addOptional(P,'t1_json','/INPUTS/t1.json');
+addOptional(P,'out_dir','/OUTPUTS');
+parse(P,varargin{:});
+inp = P.Results;
 disp(inp)
+
 
 % Unzip the fmri and run the actual pipeline
 gunzip(inp.fmri_niigz)
