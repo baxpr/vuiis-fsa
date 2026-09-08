@@ -1,19 +1,19 @@
+function batch_alff(inp)
 
-%% Output dir (should also contain preprocessed images)
-out_dir = [pwd '/../../OUTPUTS'];
+% Output dir (should also contain preprocessed images)
+out_dir = inp.out_dir;
 
 
-%% Get scan-specific information
+% Get TR from fmri json
 fid = fopen(fullfile(out_dir,'fmri.json'), 'r');
 jstr = fread(fid, '*char').';
 fclose(fid);
 fmri_info = jsondecode(jstr);
-
 fmri_trsec = fmri_info.RepetitionTime;
 fprintf('Found TR = %0.3f sec for fmri\n',fmri_trsec);
 
 
-%% Configure BRANT variables for SPON processing
+% Configure BRANT variables for SPON processing
 batch_file = fullfile(out_dir,'brant_ALFF_fALFF.mat');
 gui_fn = 'ALFF/fALFF';
 gui_func = @brant_alff;

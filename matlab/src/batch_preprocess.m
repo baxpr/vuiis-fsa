@@ -1,31 +1,33 @@
+function batch_preprocess(inp)
 
-%% Paths for local run
-% BRANT and SPM may need
-%    sudo xattr -dr com.apple.quarantine <path>
-addpath([pwd '/../../external/brant/brant-stable']);
-brant_configure_paths;
-brant_configure_paths([pwd '/../../external/spm12_r7771/spm12']);
+% %% Paths for local run
+% % BRANT and SPM may need
+% %    sudo xattr -dr com.apple.quarantine <path>
+% addpath([pwd '/../../external/brant/brant-stable']);
+% brant_configure_paths;
+% brant_configure_paths([pwd '/../../external/spm12_r7771/spm12']);
 
 
 %% Input images and output dir
-fmri_nii = [pwd '/../../INPUTS/fmri.nii'];
-fmri_json = [pwd '/../../INPUTS/fmri.json'];
-t1_nii = [pwd '/../../INPUTS/t1.nii'];
-t1_json = [pwd '/../../INPUTS/t1.json'];
-out_dir = [pwd '/../../OUTPUTS'];
+fmri_nii = inp.fmri_nii;
+fmri_json = inp.fmri_json;
+t1_nii = inp.t1_nii;
+t1_json = inp.t1_json;
+out_dir = inp.out_dir;
 
 
-%% Copy files to work dir and get scan-specific information
+%% Copy files to work dir
 copyfile(fmri_nii,fullfile(out_dir,'fmri.nii'));
 copyfile(fmri_json,fullfile(out_dir,'fmri.json'));
 copyfile(t1_nii,fullfile(out_dir,'t1.nii'));
 copyfile(t1_json,fullfile(out_dir,'t1.json'));
 
+
+%% Extract TR from fmri json
 fid = fopen(fullfile(out_dir,'fmri.json'), 'r');
 jstr = fread(fid, '*char').';
 fclose(fid);
 fmri_info = jsondecode(jstr);
-
 fmri_trsec = fmri_info.RepetitionTime;
 fprintf('Found TR = %0.3f sec for %s\n',fmri_trsec,fmri_nii);
 
@@ -247,8 +249,8 @@ gui_parameters{1}.smooth = struct( ...
     'im',1 ...
     );
 
-% Save to file
+%% Save to file and run
 save(batch_file,'gui_fn','gui_func','gui_version','gui_parameters');
 
-% Run
 gui_func(gui_parameters{:},[]);
+
