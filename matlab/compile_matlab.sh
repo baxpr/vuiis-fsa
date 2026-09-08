@@ -4,7 +4,7 @@
 WD=$(pwd)
 
 # Where to find SPM12 on our compilation machine
-SPM_PATH="${WD}"/external/spm12_r7771
+SPM_PATH="${WD}"/../external/spm12_r7771/spm12
 
 # Add Matlab to the path on the compilation machine
 export MATLABROOT=~/MATLAB/R2023a
