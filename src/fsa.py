@@ -1,47 +1,41 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 #
 # FSA processing for a single subject, following 
 # https://github.com/BingLiu-Lab/FSA/blob/a2051b11/fsa.ipynb
 
+import argparse
 import copy
 import joblib
 import os
 import numpy
+import pandas
 import sklearn.preprocessing
 import sys
 import types
 from nilearn import image, masking
 from scipy import stats, ndimage
 
+# Args
+parser = argparse.ArgumentParser()
+parser.add_argument('--fmri_nii', default='/OUTPUTS/dGSRwrfmri.nii')
+parser.add_argument('--falff_nii', default='/OUTPUTS/fALFF_Normalised_z/fALFF_z_OUTPUTS.nii')
+parser.add_argument('--out_dir', default='/OUTPUTS')
+args = parser.parse_args()
+
 # Find the path to this script
 this_dir = os.path.dirname(os.path.realpath(__file__))
-
-# Output directory
-out_dir = os.path.realpath(os.path.join(this_dir,'..','OUTPUTS'))
-
-# Preprocessed fmri inputs
-fmri_nii = os.path.realpath(os.path.join(this_dir,'..','OUTPUTS','dGSRwrfmri.nii'))
-falff_nii = os.path.realpath(os.path.join(this_dir,'..','OUTPUTS','fALFF_Normalised_z','fALFF_z_OUTPUTS.nii'))
 
 # Find the FSA resources dir with striatum masks
 fsa_resdir = os.path.realpath(os.path.join(this_dir,'..','external','fsa','FSA','Resources'))
 
-print(fmri_nii)
-print(falff_nii)
+# Report inputs
+print(args.fmri_nii)
+print(args.falff_nii)
 print(fsa_resdir)
-
-## Set up
-
-# load datasets 
-#fmri_973 = datasets.fetch_973_fmri(center=1)
-#vbf_973 = datasets.fetch_973_vbf(center=1)
-#subjects = [s for s in vbf_973['subject_index'] if s[:2] == 'SZ' or s[:2] == 'NC'][:50]
-#vbf = numpy.array(vbf_973['ALFF_GR'])[[vbf_973['subject_index'].index(s) for s in subjects]]
-#fmris = numpy.array(fmri_973['fMRI_GR'])[[fmri_973['subject_index'].index(s) for s in subjects]]
-#sample = image.load_img(fmris[0])
+print(args.out_dir)
 
 # Load an MNI space fmri volume to get a resampling reference
-sample = image.load_img(fmri_nii)
+sample = image.load_img(args.fmri_nii)
 
 # Load MNI space striatum masks and resample
 mask = image.load_img(os.path.join(fsa_resdir, 'mask_ICV_WB.nii.gz'))
@@ -64,20 +58,10 @@ mask_tem6.to_filename(os.path.join(out_dir,'mask_tem6.nii'))
 striatum_mask_res6.to_filename(os.path.join(out_dir,'striatum_mask_res6.nii'))
 striatum_mask_res8.to_filename(os.path.join(out_dir,'striatum_mask_res8.nii'))
 
-#print(help(seed_striatum_res))
-
-#print(sample.get_sform())
-#print(seed_striatum_res.get_sform())
-
-#print(sample.get_qform())
-#print(seed_striatum_res.get_qform())
-
-#print(sample.shape)
-#print(seed_striatum_res.shape)
 
 ## Compute features
 
-f_img_uns = image.load_img(fmri_nii)
+f_img_uns = image.load_img(args.fmri_nii)
 
 # Applying smooth when using voxel-wise features
 f_img = image.smooth_img(f_img_uns, fwhm=6)
@@ -106,22 +90,20 @@ corr = numpy.corrcoef(ts_str.T)
 fc_str = corr[numpy.tril_indices_from(corr, -1)]
 
 # Extracting striatal fALFF 
-striatum_seed_res = image.resample_to_img(target_img=falff_nii, source_img=seed_striatum, interpolation='nearest')
+striatum_seed_res = image.resample_to_img(target_img=args.falff_nii, source_img=seed_striatum, interpolation='nearest')
 alff = masking.apply_mask(falff_nii, mask_img=striatum_seed_res)
 
 striatal_features = numpy.concatenate([alff, corr_striatum_other, fc_str])
 
-joblib.dump(striatal_features, os.path.join(out_dir, 'candidates.pkl'))
+joblib.dump(striatal_features, os.path.join(args.out_dir, 'candidates.pkl'))
 
-print(striatal_features)
-print(striatal_features.shape)
 
 ## Compute FSA prediction and score
 
 # Create an alias module for the old sklearn path used in older pickles
-alias = types.ModuleType("sklearn.preprocessing.data")
-alias.__dict__.update(sklearn.preprocessing.__dict__)
-sys.modules["sklearn.preprocessing.data"] = alias
+#alias = types.ModuleType("sklearn.preprocessing.data")
+#alias.__dict__.update(sklearn.preprocessing.__dict__)
+#sys.modules["sklearn.preprocessing.data"] = alias
 
 # Load pre-trained model of standardizing features by all samples from 7 sites
 # A new customized standardization model could be more applicable for new datasets with different races, MR scanners or preprocessing pipelines
@@ -137,3 +119,6 @@ predict = svc.predict(prep.transform(striatal_features))
 FSA_score = svc.decision_function(prep.transform(striatal_features))
 print(FSA_score)
 
+# Save to csv
+data = pandas.DataFrame(FSA_score, columns=['FSAscore'])
+data.to_csv(os.path.join(args.out_dir, 'fsa.csv'), index=False)

@@ -4,6 +4,9 @@ joblib==0.14.1
 nibabel==2.5.2
 nilearn==0.5.2
 numpy==1.16.6
+pandas==0.24.2
+python-dateutil==2.9.0.post0
+pytz==2026.3.post1
 scikit-learn==0.18.1
 scipy==1.2.3
 six==1.17.0
