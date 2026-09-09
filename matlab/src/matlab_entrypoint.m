@@ -22,6 +22,8 @@ disp(inp)
 % Unzip the fmri and run the actual pipeline
 gunzip(inp.fmri_niigz)
 inp.fmri_nii = strrep(inp.fmri_niigz,'.gz','');
+gunzip(inp.t1_niigz)
+inp.t1_nii = strrep(inp.t1_niigz,'.gz','');
 
 batch_preprocess(inp);
 
