@@ -1,7 +1,0 @@
-Help information for Smooth:
-    
-fwhm: full width half maximum for gauss kernel.
-prefix: output prefix.
-     
-end
-     
