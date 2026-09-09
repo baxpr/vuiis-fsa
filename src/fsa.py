@@ -91,7 +91,7 @@ fc_str = corr[numpy.tril_indices_from(corr, -1)]
 
 # Extracting striatal fALFF 
 striatum_seed_res = image.resample_to_img(target_img=args.falff_nii, source_img=seed_striatum, interpolation='nearest')
-alff = masking.apply_mask(falff_nii, mask_img=striatum_seed_res)
+alff = masking.apply_mask(args.falff_nii, mask_img=striatum_seed_res)
 
 striatal_features = numpy.concatenate([alff, corr_striatum_other, fc_str])
 
