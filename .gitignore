@@ -3,4 +3,4 @@ OUTPUTS*
 external/spm12_r7771/spm12/*
 !external/spm12_r7771/spm12/LICENCE.txt
 !external/spm12_r7771/spm12/README.md
-
+matlab/bin/spm12_mcr
