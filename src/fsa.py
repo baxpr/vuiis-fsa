@@ -52,11 +52,11 @@ striatum_index = masking.apply_mask(seed_striatum_res, mask_res)
 striatum_mask_res_data = masking.apply_mask(striatum_mask_res6, mask_tem6)
 
 # Save resampled masks
-seed_striatum_res.to_filename(os.path.join(out_dir,'seed_striatum_res.nii'))
-mask_res.to_filename(os.path.join(out_dir,'mask_res.nii'))
-mask_tem6.to_filename(os.path.join(out_dir,'mask_tem6.nii'))
-striatum_mask_res6.to_filename(os.path.join(out_dir,'striatum_mask_res6.nii'))
-striatum_mask_res8.to_filename(os.path.join(out_dir,'striatum_mask_res8.nii'))
+seed_striatum_res.to_filename(os.path.join(args.out_dir,'seed_striatum_res.nii'))
+mask_res.to_filename(os.path.join(args.out_dir,'mask_res.nii'))
+mask_tem6.to_filename(os.path.join(args.out_dir,'mask_tem6.nii'))
+striatum_mask_res6.to_filename(os.path.join(args.out_dir,'striatum_mask_res6.nii'))
+striatum_mask_res8.to_filename(os.path.join(args.out_dir,'striatum_mask_res8.nii'))
 
 
 ## Compute features
