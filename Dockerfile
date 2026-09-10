@@ -13,9 +13,9 @@ RUN apt-get -y update \
     && update-ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Check certs    
-RUN wget -S --spider https://ssd.mathworks.com/ || true
-RUN openssl s_client -connect ssd.mathworks.com:443 -servername ssd.mathworks.com </dev/null | head -n 40 || true
+# Check that certs are working
+#RUN wget -S --spider https://ssd.mathworks.com/ || true
+#RUN openssl s_client -connect ssd.mathworks.com:443 -servername ssd.mathworks.com </dev/null | head -n 40 || true
 
 # Install the MCR
 RUN wget -nv https://ssd.mathworks.com/supportfiles/downloads/R2023a/Release/6/deployment_files/installer/complete/glnxa64/MATLAB_Runtime_R2023a_Update_6_glnxa64.zip \
