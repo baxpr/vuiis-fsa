@@ -32,6 +32,7 @@ ENV MCR_INHIBIT_CTF_LOCK=1
 ENV MCR_CACHE_ROOT=/tmp
 
 # Copy the pipeline code
+COPY external/fsa /opt/vuiis-fsa/external/fsa
 COPY matlab /opt/vuiis-fsa/matlab
 COPY src /opt/vuiis-fsa/src
 COPY README.md /opt/vuiis-fsa/README.md

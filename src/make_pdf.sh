@@ -19,7 +19,7 @@ fsleyes render --outfile reg2.png --size 1800 600 --worldLoc 10 0 0 --hideCursor
 
 
 # Build a single-page PDF aided (?) by GPT-5.2:
-magick -units PixelsPerInch -density 300 \
+convert -units PixelsPerInch -density 300 \
   \( reg.png  -auto-orient -resize 2250x \
      -background white -gravity north -splice 0x90 \
      -gravity north -font Helvetica -pointsize 14 -fill black \
@@ -44,4 +44,4 @@ magick -units PixelsPerInch -density 300 \
   +repage \
   output.png
 
-magick output.png fsa-registrations.pdf
+convert output.png fsa-registrations.pdf
