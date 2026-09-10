@@ -17,7 +17,7 @@ fsleyes render --outfile reg.png --size 1800 600 --hideCursor --scene ortho mean
 # Template gray matter outline on subject MNI fmri
 fslroi "${script_dir}"/../external/spm12_r7771/spm12/tpm/TPM gm_template 0 1
 fslmaths gm_template -thr 0.6 -edge -thr 0.2 gmedge_template
-fsleyes render --outfile reg2.png --size 1800 600 --worldLoc 10 0 0 --hideCursor --scene ortho wrfmri --cmap greyscale gmedge_template --cmap red 
+fsleyes render --outfile reg2.png --size 1800 600 --worldLoc 10 0 0 --hideCursor --scene ortho wr*fmri.nii --cmap greyscale gmedge_template --cmap red 
 
 
 # Build a single-page PDF aided (?) by GPT-5.2:
