@@ -36,7 +36,8 @@ COPY src/requirements.txt /tmp/requirements.txt
 RUN curl -sS https://bootstrap.pypa.io/pip/2.7/get-pip.py -o /tmp/get-pip.py \
     && python2 /tmp/get-pip.py \
     && rm -f /tmp/get-pip.py \
-    && pip2 install --no-cache-dir -r /tmp/requirements.txt
+    && pip2 install --no-cache-dir -r /tmp/requirements.txt \
+    && rm -f /tmp/requirements.txt
 
 # Copy the pipeline code
 COPY external/fsa /opt/vuiis-fsa/external/fsa
