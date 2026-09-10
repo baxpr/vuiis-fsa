@@ -6,7 +6,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Matlab reqs
 RUN apt-get -y update && \
     apt-get -y install --no-install-recommends \
-	openjdk-8-jre && \
+    openjdk-8-jre && \
     apt-get clean
         
 # Install the MCR
@@ -30,16 +30,16 @@ COPY README.md /opt/vuiis-fsa/README.md
 
 # Python 2 environment for FSA script
 RUN apt-get update && \
-	apt-get -y install --no-install-recommends \
+    apt-get -y install --no-install-recommends \
     python2 \
     ca-certificates \
     curl && \
-	curl -sS https://bootstrap.pypa.io/pip/2.7/get-pip.py -o /tmp/get-pip.py && \
-	python2 /tmp/get-pip.py && \
+    curl -sS https://bootstrap.pypa.io/pip/2.7/get-pip.py -o /tmp/get-pip.py && \
+    python2 /tmp/get-pip.py && \
     apt-get clean && \
-	rm -f /tmp/get-pip.py && \
-	rm -rf /var/lib/apt/lists/* && \
-	pip2 install --no-cache-dir -r /opt/vuiis-fsa/src/requirements.txt
+    rm -f /tmp/get-pip.py && \
+    rm -rf /var/lib/apt/lists/* && \
+    pip2 install --no-cache-dir -r /opt/vuiis-fsa/src/requirements.txt
 
 # Add pipeline to system path
 ENV PATH /opt/vuiis-fsa/src:/opt/vuiis-fsa/matlab/bin:${PATH}
