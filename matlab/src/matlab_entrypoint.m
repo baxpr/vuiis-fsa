@@ -13,6 +13,8 @@ addOptional(P,'fmri_niigz','/INPUTS/fmri.nii.gz')
 addOptional(P,'fmri_json','/INPUTS/fmri.json')
 addOptional(P,'t1_niigz','/INPUTS/t1.nii.gz');
 addOptional(P,'t1_json','/INPUTS/t1.json');
+addOptional(P,'slicetiming','ascend');
+addOptional(P,'filetype','dGSRwrafmri.nii');
 addOptional(P,'out_dir','/OUTPUTS');
 parse(P,varargin{:});
 inp = P.Results;

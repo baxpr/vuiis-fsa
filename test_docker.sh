@@ -9,4 +9,6 @@ podman run \
     --t1_niigz /INPUTS/t1.nii.gz \
     --t1_json /INPUTS/t1.json \
     --label_str "Test Subject/Session" \
+    --slicetiming ascend \
+    --filetype dGSRwrafmri.nii \
     --out_dir /OUTPUTS

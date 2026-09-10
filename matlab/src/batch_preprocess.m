@@ -14,6 +14,7 @@ fmri_json = inp.fmri_json;
 t1_nii = inp.t1_nii;
 t1_json = inp.t1_json;
 out_dir = inp.out_dir;
+slicetiming = inp.slicetiming;
 
 
 %% Copy files to work dir
@@ -24,12 +25,19 @@ copyfile(t1_json,fullfile(out_dir,'t1.json'));
 
 
 %% Extract TR from fmri json
-fid = fopen(fullfile(out_dir,'fmri.json'), 'r');
-jstr = fread(fid, '*char').';
-fclose(fid);
-fmri_info = jsondecode(jstr);
-fmri_trsec = fmri_info.RepetitionTime;
-fprintf('Found TR = %0.3f sec for %s\n',fmri_trsec,fmri_nii);
+%fid = fopen(fullfile(out_dir,'fmri.json'), 'r');
+%jstr = fread(fid, '*char').';
+%fclose(fid);
+%fmri_info = jsondecode(jstr);
+%fmri_trsec = fmri_info.RepetitionTime;
+%fprintf('Found TR = %0.3f sec for %s\n',fmri_trsec,fmri_nii);
+
+
+%% Get TR and number of vols from nifti
+N = nifti(fmri_nii);
+fmri_trsec = N.timing.tspace;
+fmri_nvols = size(N.dat,4);
+fprintf('Found TR = %0.3f sec for %d vols in %s\n',fmri_trsec,fmri_nvols,fmri_nii);
 
 
 %% Configure BRANT variables for preprocessing
@@ -63,7 +71,7 @@ gui_parameters{1}.pref = struct( ...
 
 % Preprocessing steps
 gui_parameters{1}.ind = struct( ...
-    'slicetiming',0, ...
+    'slicetiming',1, ...
     'realign',1, ...
     'coregister',1, ...
     'normalise',0, ...
@@ -73,11 +81,16 @@ gui_parameters{1}.ind = struct( ...
     );
 
 % Slice timing
-%% FIXME Need slice timing params here matching the data
+if strcmpi(slicetiming,'ascend')
+    sliceorder = 1:fmri_nvols;
+    refslice = floor(fmri_nvols/2);
+else
+    error('Unknown slice timing %s',slicetiming)
+end
 gui_parameters{1}.slicetiming = struct( ...
-    'slice_order',0, ...
+    'slice_order',sliceorder, ...
     'tr',fmri_trsec, ...
-    'refslice',0, ...
+    'refslice',refslice, ...
     'prefix','a' ...
     );
 
