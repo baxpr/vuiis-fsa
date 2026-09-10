@@ -5,6 +5,7 @@ export fmri_niigz=/INPUTS/fmri.nii.gz
 export fmri_json=/INPUTS/fmri.json
 export t1_niigz=/INPUTS/t1.nii.gz
 export t1_json=/INPUTS/t1.json
+export label_str="Unknown project/subject/session"
 export out_dir=/OUTPUTS
 
 # Parse input options
@@ -15,6 +16,7 @@ while [[ $# -gt 0 ]]; do
         --fmri_json)  export fmri_json="${2}";  shift; shift ;;
         --t1_niigz)   export t1_niigz="${2}";   shift; shift ;;
         --t1_json)    export t1_json="${2}";    shift; shift ;;
+        --label_str)  export label_str="${2}";  shift; shift ;;
         --out_dir)    export out_dir="${2}";    shift; shift ;;
         *) echo "Input ${1} not recognized" ; shift ;;
     esac
@@ -37,3 +39,7 @@ fsa.py \
 	--out_dir "${out_dir}"
 
 # PDF report
+make_pdf.sh
+
+# Zip niftis
+find "${out_dir}" -name \*.nii -exec gzip {} \;
