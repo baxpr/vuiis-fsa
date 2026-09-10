@@ -35,7 +35,7 @@ run_spm12.sh \
     t1_niigz "${t1_niigz}" \
     t1_json "${t1_json}" \
     slicetiming "${slicetiming}" \
-    filetype "${filetype}" \            
+    filetype "${filetype}" \
     out_dir "${out_dir}"
 
 # FSA score
