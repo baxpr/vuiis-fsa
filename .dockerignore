@@ -1,6 +1,7 @@
 *
 !Dockerfile
 !external/fsa
+!external/spm12_r7771/spm12/tpm
 !matlab
 !README.md
 !src

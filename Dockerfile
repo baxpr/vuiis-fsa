@@ -33,18 +33,19 @@ ENV MCR_CACHE_ROOT=/tmp
 
 # Copy the pipeline code
 COPY external/fsa /opt/vuiis-fsa/external/fsa
+COPY external/spm12_r7771/spm12/tpm /opt/vuiis-fsa/external/spm12_r7771/spm12/tpm
 COPY matlab /opt/vuiis-fsa/matlab
 COPY src /opt/vuiis-fsa/src
 COPY README.md /opt/vuiis-fsa/README.md
-
-# Add pipeline to system path
-ENV PATH /opt/vuiis-fsa/src:/opt/vuiis-fsa/matlab/bin:${PATH}
 
 # Python 2 environment for FSA script
 RUN curl -sS https://bootstrap.pypa.io/pip/2.7/get-pip.py -o /tmp/get-pip.py \
     && python2 /tmp/get-pip.py \
     && rm -f /tmp/get-pip.py \
     && pip2 install --no-cache-dir -r /opt/vuiis-fsa/src/requirements.txt
+
+# Add pipeline to system path
+ENV PATH /opt/vuiis-fsa/src:/opt/vuiis-fsa/matlab/bin:${PATH}
 
 # Matlab executable must be run at build to extract the CTF archive
 RUN run_spm12.sh ${MATLAB_RUNTIME} function quit
