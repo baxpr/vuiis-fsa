@@ -18,7 +18,7 @@ fslmaths gm_template -thr 0.6 -edge -thr 0.2 gmedge_template
 fsleyes render --outfile reg2.png --size 1800 600 --worldLoc 10 0 0 --hideCursor --scene ortho wrfmri --cmap greyscale gmedge_template --cmap red 
 
 
-# Build a single-page PDF courtesy of GPT-5.2:
+# Build a single-page PDF aided (?) by GPT-5.2:
 magick -units PixelsPerInch -density 300 \
   \( reg.png  -auto-orient -resize 2250x \
      -background white -gravity north -splice 0x90 \
