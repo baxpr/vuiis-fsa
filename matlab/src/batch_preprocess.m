@@ -33,11 +33,12 @@ copyfile(t1_json,fullfile(out_dir,'t1.json'));
 %fprintf('Found TR = %0.3f sec for %s\n',fmri_trsec,fmri_nii);
 
 
-%% Get TR and number of vols from nifti
+%% Get some info from nifti
 N = nifti(fmri_nii);
 fmri_trsec = N.timing.tspace;
 fmri_nvols = size(N.dat,4);
-fprintf('Found TR = %0.3f sec for %d vols in %s\n',fmri_trsec,fmri_nvols,fmri_nii);
+fmri_nslices = size(N.dat,3);
+fprintf('Found TR = %0.3f sec for %d slices in %s\n',fmri_trsec,fmri_nslices,fmri_nii);
 
 
 %% Configure BRANT variables for preprocessing
@@ -82,8 +83,8 @@ gui_parameters{1}.ind = struct( ...
 
 % Slice timing
 if strcmpi(slicetiming,'ascend')
-    sliceorder = 1:fmri_nvols;
-    refslice = floor(fmri_nvols/2);
+    sliceorder = 1:fmri_nslices;
+    refslice = sliceorder(floor(fmri_nslices/2));
 else
     error('Unknown slice timing %s',slicetiming)
 end
