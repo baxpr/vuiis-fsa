@@ -31,18 +31,19 @@ ENV MATLAB_RUNTIME=/usr/local/MATLAB/MATLAB_Runtime/R2023a
 ENV MCR_INHIBIT_CTF_LOCK=1
 ENV MCR_CACHE_ROOT=/tmp
 
+# Python 2 environment for FSA script
+COPY src/requirements.txt /tmp/requirements.txt
+RUN curl -sS https://bootstrap.pypa.io/pip/2.7/get-pip.py -o /tmp/get-pip.py \
+    && python2 /tmp/get-pip.py \
+    && rm -f /tmp/get-pip.py \
+    && pip2 install --no-cache-dir -r /tmp/requirements.txt
+
 # Copy the pipeline code
 COPY external/fsa /opt/vuiis-fsa/external/fsa
 COPY external/spm12_r7771/spm12/tpm /opt/vuiis-fsa/external/spm12_r7771/spm12/tpm
 COPY matlab /opt/vuiis-fsa/matlab
 COPY src /opt/vuiis-fsa/src
 COPY README.md /opt/vuiis-fsa/README.md
-
-# Python 2 environment for FSA script
-RUN curl -sS https://bootstrap.pypa.io/pip/2.7/get-pip.py -o /tmp/get-pip.py \
-    && python2 /tmp/get-pip.py \
-    && rm -f /tmp/get-pip.py \
-    && pip2 install --no-cache-dir -r /opt/vuiis-fsa/src/requirements.txt
 
 # Add pipeline to system path
 ENV PATH /opt/vuiis-fsa/src:/opt/vuiis-fsa/matlab/bin:${PATH}
