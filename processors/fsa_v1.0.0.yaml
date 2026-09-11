@@ -18,12 +18,17 @@ inputs:
       - name: scan_t1
         types: T1W_3D_TFE
         skip_unusable: True
+        keep_multis: first
+        resources:
+          - {resource: NIFTI, fdest: t1.nii.gz}
+          - {resource: JSON, fdest: t1.json}
 
       - name: scan_fmri
         types: Resting_State
+        skip_unusable: True
         resources:
-          - {resource: NIFTI, fmatch: '*.nii.gz', fdest: fmri.nii.gz}
-          - {resource: JSON, fmatch: '*.txt', fdest: fmri.json}
+          - {resource: NIFTI, fdest: fmri.nii.gz}
+          - {resource: JSON, fdest: fmri.json}
 
     attrs:
       - {varname: project, object: assessor, attr: project}
