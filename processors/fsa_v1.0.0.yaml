@@ -1,0 +1,53 @@
+---
+procyamlversion: 3.0.0-dev.0
+containers:
+  - name: fsa
+    path: vuiis-fsa_v1.0.0.sif
+    source: docker://baxterprogers/vuiis-fsa:v1.0.0
+requirements:
+  walltime: 0-8
+  memory: 16G
+jobtemplate: job_template_v3.txt
+  
+inputs:
+
+  xnat:
+
+    scans:
+
+      - name: scan_t1
+        types: T1W_3D_TFE
+        skip_unusable: True
+
+     - name: scan_fmri
+        types: Resting_State
+        resources:
+          - {resource: NIFTI, fmatch: '*.nii.gz', fdest: fmri.nii.gz}
+          - {resource: JSON, fmatch: '*.txt', fdest: fmri.json}
+
+    attrs:
+      - {varname: project, object: assessor, attr: project}
+      - {varname: subject, object: session, attr: subject_label}
+      - {varname: session, object: session, attr: label}
+      - {varname: scan, object: scan, attr: ID, ref: scan_fmri}
+
+
+outputs:
+  - pdf: fsa-registrations.pdf
+  - {path: fsa.csv, type: FILE, resource: STATS}
+  - {path: brant_Preprocessing.mat, type: FILE, resource: BATCHJOBS}
+  - {path: brant_ALFF_fALFF.mat, type: FILE, resource: BATCHJOBS}
+
+
+command:
+  type: singularity_run
+  container: fsa
+  args: >-
+    --fmri_niigz /INPUTS/fmri.nii.gz
+    --fmri_json /INPUTS/fmri.json
+    --t1_niigz /INPUTS/t1.nii.gz
+    --t1_json /INPUTS/t1.json
+    --label_str "{project} {subject} {session} {scan}"
+    --slicetiming ascend
+    --filetype dGSRwrafmri.nii
+    --out_dir /OUTPUTS

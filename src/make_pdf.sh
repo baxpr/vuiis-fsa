@@ -12,7 +12,7 @@ cd "${out_dir}"
 
 # Subject white matter outline on subject mean fmri
 fslmaths c2t1 -thr 0.9 -edge -thr 0.3 wmedge
-fsleyes render --outfile reg.png --size 1800 600 --hideCursor --scene ortho mean*fmri --cmap greyscale wmedge --cmap red 
+fsleyes render --outfile reg.png --size 1800 600 --hideCursor --scene ortho mean*fmri.nii --cmap greyscale wmedge --cmap red 
 
 # Template gray matter outline on subject MNI fmri
 fslroi "${script_dir}"/../external/spm12_r7771/spm12/tpm/TPM gm_template 0 1
