@@ -19,7 +19,7 @@ inputs:
         types: T1W_3D_TFE
         skip_unusable: True
 
-     - name: scan_fmri
+      - name: scan_fmri
         types: Resting_State
         resources:
           - {resource: NIFTI, fmatch: '*.nii.gz', fdest: fmri.nii.gz}
