@@ -71,8 +71,13 @@ gui_parameters{1}.pref = struct( ...
     );
 
 % Preprocessing steps
+if strcmpi(slicetiming,'none')
+    slicetiming_flag = 0;
+else
+    slicetiming_flag = 1;
+end
 gui_parameters{1}.ind = struct( ...
-    'slicetiming',1, ...
+    'slicetiming',slicetiming_flag, ...
     'realign',1, ...
     'coregister',1, ...
     'normalise',0, ...
@@ -82,8 +87,14 @@ gui_parameters{1}.ind = struct( ...
     );
 
 % Slice timing
-if strcmpi(slicetiming,'ascend')
+if strcmpi(slicetiming,'none')
+    fprintf('Skipping slice timing correction\n')
+    sliceorder = [];
+elseif strcmpi(slicetiming,'ascend')
     sliceorder = 1:fmri_nslices;
+    refslice = sliceorder(floor(fmri_nslices/2));
+elseif strcmpi(slicetiming,'ascend_alternating_1')
+    sliceorder = [1:2:fmri_nslices 2:2:fmri_nslices];
     refslice = sliceorder(floor(fmri_nslices/2));
 else
     error('Unknown slice timing %s',slicetiming)
