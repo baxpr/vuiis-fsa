@@ -9,4 +9,7 @@ run_spm12.sh \
     fmri_json $(pwd)/../INPUTS/fmri.json \
     t1_niigz $(pwd)/../INPUTS/t1.nii.gz \
     t1_json $(pwd)/../INPUTS/t1.json \
+    slicetiming ascend_alternating_1 \
+    filetype dGSRwrafmri.nii \
     out_dir $(pwd)/../OUTPUTS
+
