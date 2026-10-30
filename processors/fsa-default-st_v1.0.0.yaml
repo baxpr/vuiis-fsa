@@ -16,7 +16,7 @@ inputs:
     scans:
 
       - name: scan_t1
-        types: T1W_3D_TFE
+        types: T1W_3D_TFE_new
         skip_unusable: True
         keep_multis: first
         resources:
@@ -24,7 +24,7 @@ inputs:
           - {resource: JSON, fdest: t1.json}
 
       - name: scan_fmri
-        types: Resting_State
+        types: Funct_Run1
         skip_unusable: True
         resources:
           - {resource: NIFTI, fdest: fmri.nii.gz}
