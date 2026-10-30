@@ -2,8 +2,8 @@
 procyamlversion: 3.0.0-dev.0
 containers:
   - name: fsa
-    path: vuiis-fsa_v1.0.0.sif
-    source: docker://baxterprogers/vuiis-fsa:v1.0.0
+    path: vuiis-fsa_v1.1.0.sif
+    source: docker://baxterprogers/vuiis-fsa:v1.1.0
 requirements:
   walltime: 0-8
   memory: 16G
